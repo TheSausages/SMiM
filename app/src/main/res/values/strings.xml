@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Pierwszy Projekt</string>
+    <string name="gallery_image_min_description">Single thumbnail element of the gallery</string>
+    <string name="gallery_image_big_description">Single fullscreen item of the gallery</string>
+</resources>
