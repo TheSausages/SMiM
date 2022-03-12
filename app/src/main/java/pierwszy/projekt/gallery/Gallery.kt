@@ -4,6 +4,7 @@ import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
+import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
 import android.view.View
@@ -11,12 +12,27 @@ import android.widget.AdapterView
 import android.widget.GridView
 import android.widget.Toast
 import pierwszy.projekt.MainActivity
+import java.io.File
 import java.lang.RuntimeException
+
+class GalleryItem(val imagePath: String) {
+    fun asFile(): File {
+        return File(imagePath)
+    }
+
+    fun asUri(): Uri {
+        return Uri.fromFile(asFile())
+    }
+
+    override fun toString(): String {
+        return imagePath
+    }
+}
 
 class Gallery(
     private val context: Context,
     private val resolver: ContentResolver,
-    private val view: GridView,
+    view: GridView,
     private val startActivity: (intent: Intent) -> Unit,
     private val imageList: ArrayList<GalleryItem> = ArrayList()
 ) {
@@ -26,11 +42,10 @@ class Gallery(
         view.adapter = this.adapter
 
         //When clicking, open the image
-        view.onItemClickListener = AdapterView.OnItemClickListener { adapterView, view, i, l -> run {
-            val item: GalleryItem = adapterView.getItemAtPosition(i) as GalleryItem
-
+        view.onItemClickListener = AdapterView.OnItemClickListener { _, _, i, _ -> run {
             val intent = Intent(context, GalleryFullscreenActivity::class.java)
-            intent.putExtra("imageUri", item.imagePath)
+            intent.putStringArrayListExtra("images", imageList.map { it.toString() } as ArrayList<String>)
+            intent.putExtra("currentPosition", i)
             startActivity(intent)
         }}
     }
