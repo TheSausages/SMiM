@@ -6,19 +6,19 @@ import android.view.MotionEvent
 import android.view.View
 import kotlin.math.abs
 
-class SimpleGalleryListener(
+class SimpleSwipeListener(
     context: Context,
     val swipeRight: () -> Unit,
     val swipeLeft: () -> Unit
 ): View.OnTouchListener {
-    private val detector = GestureDetector(context, SwipeGalleryDetector())
+    private val detector = GestureDetector(context, SwipeSwipeDetector())
 
     override fun onTouch(p0: View?, p1: MotionEvent?): Boolean {
         p0?.performClick()
         return detector.onTouchEvent(p1)
     }
 
-    private inner class SwipeGalleryDetector: GestureDetector.SimpleOnGestureListener() {
+    private inner class SwipeSwipeDetector: GestureDetector.SimpleOnGestureListener() {
         private val swipeThreshold = 100
         private val swipeVelocityThreshold = 100
 
@@ -60,8 +60,7 @@ class SimpleGalleryListener(
                     if (abs(diffX) > swipeThreshold && abs(velocityX) > swipeVelocityThreshold) {
                         if (diffX > 0) {
                             swipeLeft()
-                        }
-                        else {
+                        } else {
                             swipeRight()
                         }
                     }

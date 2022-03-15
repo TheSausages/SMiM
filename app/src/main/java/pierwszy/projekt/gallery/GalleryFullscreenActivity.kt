@@ -1,44 +1,86 @@
 package pierwszy.projekt.gallery
 
 import android.annotation.SuppressLint
-import android.net.Uri
+import android.content.Context
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.content.res.Resources
+import android.icu.text.Transliterator
 import android.os.Bundle
-import android.view.GestureDetector
-import android.view.MotionEvent
-import android.view.View
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import pierwszy.projekt.R
-import pierwszy.projekt.SimpleGalleryListener
+import pierwszy.projekt.SimpleSwipeListener
+import java.util.*
+import kotlin.collections.ArrayList
+
 
 class GalleryFullscreenActivity: AppCompatActivity() {
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.gallery_item_fullscreen)
 
-        val images = intent.extras!!.getStringArrayList("images")!!
-        val currentPosition = Pos(intent.extras!!.getInt("currentPosition"), images.size)
+        val images: ArrayList<GalleryItem> =
+            intent.extras?.getParcelableArrayList("images")
+                ?: throw Resources.NotFoundException("Did not find the images")
+
+        val currentPosition = Position(
+            intent.extras?.getInt("currentPosition")
+                ?: throw Resources.NotFoundException("Did not find the current position"),
+            images.size
+        )
+
         val imageView: ImageView = findViewById(R.id.gallery_item_fullscreen_id)
 
-        imageView.setImageURI(Uri.parse(images[currentPosition.position]))
+        setImage(imageView, (images[currentPosition.position]))
 
-        imageView.setOnTouchListener(SimpleGalleryListener(
+        imageView.setOnTouchListener(SimpleSwipeListener(
             imageView.context,
-            { imageView.setImageURI(Uri.parse(images[currentPosition.add()])) },
-            { imageView.setImageURI(Uri.parse(images[currentPosition.minus()])) }
+            {
+                kotlin.run {
+                    if (!currentPosition.isEnd) {
+                        val intent = Intent(baseContext, GalleryFullscreenActivity::class.java).setFlags(FLAG_ACTIVITY_CLEAR_TOP)
+                        intent.putParcelableArrayListExtra("images", images)
+                        intent.putExtra("currentPosition", currentPosition.forward())
+                        startActivity(intent)
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
+                    }
+                }
+            },
+            {
+                kotlin.run {
+                    if (!currentPosition.isBeginning) {
+                        val intent = Intent(baseContext, GalleryFullscreenActivity::class.java).setFlags(FLAG_ACTIVITY_CLEAR_TOP)
+                        intent.putParcelableArrayListExtra("images", images)
+                        intent.putExtra("currentPosition", currentPosition.back())
+                        startActivity(intent)
+                        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
+                    }
+                }
+            }
         ))
     }
 }
 
-class Pos(var position: Int, val max: Int) {
-    fun add(): Int {
-        if (position < max - 1) position++
+class Position(var position: Int, max: Int) {
+    var upperLimit = max - 1
+
+    fun forward(): Int {
+        if (position < upperLimit) position++
         return position
     }
 
-    fun minus(): Int {
+    fun back(): Int {
         if (position > 0) position--
         return position
     }
+
+    val isBeginning: Boolean
+        get() = position == 0
+
+    val isEnd: Boolean
+        get() = position == upperLimit
 }

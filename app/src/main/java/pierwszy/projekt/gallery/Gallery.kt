@@ -6,16 +6,41 @@ import android.content.Intent
 import android.database.Cursor
 import android.net.Uri
 import android.os.Environment
+import android.os.Parcel
+import android.os.Parcelable
 import android.provider.MediaStore
 import android.view.View
 import android.widget.AdapterView
 import android.widget.GridView
+import android.widget.ImageView
 import android.widget.Toast
 import pierwszy.projekt.MainActivity
 import java.io.File
 import java.lang.RuntimeException
 
-class GalleryItem(val imagePath: String) {
+class GalleryItem(private val imagePath: String): Parcelable {
+    //Parcelable elements
+    constructor(parcel: Parcel) : this(parcel.readString() ?: "")
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(imagePath)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<GalleryItem> {
+        override fun createFromParcel(parcel: Parcel): GalleryItem {
+            return GalleryItem(parcel)
+        }
+
+        override fun newArray(size: Int): Array<GalleryItem?> {
+            return arrayOfNulls(size)
+        }
+    }
+
+    //Other elements
     fun asFile(): File {
         return File(imagePath)
     }
@@ -28,6 +53,8 @@ class GalleryItem(val imagePath: String) {
         return imagePath
     }
 }
+
+fun setImage(view: ImageView, image: GalleryItem) = view.setImageURI(image.asUri())
 
 class Gallery(
     private val context: Context,
@@ -44,7 +71,7 @@ class Gallery(
         //When clicking, open the image
         view.onItemClickListener = AdapterView.OnItemClickListener { _, _, i, _ -> run {
             val intent = Intent(context, GalleryFullscreenActivity::class.java)
-            intent.putStringArrayListExtra("images", imageList.map { it.toString() } as ArrayList<String>)
+            intent.putParcelableArrayListExtra("images", imageList)
             intent.putExtra("currentPosition", i)
             startActivity(intent)
         }}
