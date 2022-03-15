@@ -8,19 +8,19 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import pierwszy.projekt.gallery.Gallery
+import pierwszy.projekt.activities.Gallery
 
 
 class MainActivity : AppCompatActivity() {
     private val PERMISSION_REQUEST_CODE = 200
-    private lateinit var gallery: Gallery;
+    private lateinit var galleryIntent: Intent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.gallery_collection)
 
         //Create a Gallery object that contains all the image paths
-        gallery = Gallery(this, contentResolver, findViewById(R.id.gallery_collection_id), { intent: Intent -> startActivity(intent)})
+        galleryIntent = Intent(this, Gallery::class.java)
 
         //Check for required permissions
         requestPermissions()
@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
     private fun requestPermissions() {
         if (ContextCompat.checkSelfPermission(applicationContext, READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
             //If permissions were found and are correct, get the photos
-            gallery.updateImagePaths()
+            startActivity(galleryIntent)
         } else {
             //If not, try to get the permissions
             ActivityCompat.requestPermissions(
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == PERMISSION_REQUEST_CODE && grantResults.isNotEmpty()) {
             if (PackageManager.PERMISSION_GRANTED == grantResults[0]) {
-                gallery.updateImagePaths()
+                startActivity(galleryIntent)
             } else {
                 Toast.makeText(
                     this,

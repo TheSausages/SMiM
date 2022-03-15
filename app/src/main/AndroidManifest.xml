@@ -25,7 +25,8 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".gallery.GalleryFullscreenActivity"/>
+        <activity android:name=".activities.GalleryFullscreenActivity"/>
+        <activity android:name=".activities.Gallery"/>
     </application>
 
 </manifest>

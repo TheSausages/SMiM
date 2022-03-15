@@ -1,4 +1,4 @@
-package pierwszy.projekt
+package pierwszy.projekt.listeners
 
 import android.content.Context
 import android.view.GestureDetector

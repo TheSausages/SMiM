@@ -1,18 +1,16 @@
-package pierwszy.projekt.gallery
+package pierwszy.projekt.activities
 
 import android.annotation.SuppressLint
-import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.content.res.Resources
-import android.icu.text.Transliterator
 import android.os.Bundle
 import android.widget.ImageView
 import androidx.appcompat.app.AppCompatActivity
 import pierwszy.projekt.R
-import pierwszy.projekt.SimpleSwipeListener
-import java.util.*
+import pierwszy.projekt.listeners.SimpleSwipeListener
+import pierwszy.projekt.models.GalleryItemModel
+import pierwszy.projekt.models.PositionModel
 import kotlin.collections.ArrayList
 
 
@@ -23,11 +21,11 @@ class GalleryFullscreenActivity: AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.gallery_item_fullscreen)
 
-        val images: ArrayList<GalleryItem> =
+        val images: ArrayList<GalleryItemModel> =
             intent.extras?.getParcelableArrayList("images")
                 ?: throw Resources.NotFoundException("Did not find the images")
 
-        val currentPosition = Position(
+        val currentPosition = PositionModel(
             intent.extras?.getInt("currentPosition")
                 ?: throw Resources.NotFoundException("Did not find the current position"),
             images.size
@@ -63,24 +61,4 @@ class GalleryFullscreenActivity: AppCompatActivity() {
             }
         ))
     }
-}
-
-class Position(var position: Int, max: Int) {
-    var upperLimit = max - 1
-
-    fun forward(): Int {
-        if (position < upperLimit) position++
-        return position
-    }
-
-    fun back(): Int {
-        if (position > 0) position--
-        return position
-    }
-
-    val isBeginning: Boolean
-        get() = position == 0
-
-    val isEnd: Boolean
-        get() = position == upperLimit
 }

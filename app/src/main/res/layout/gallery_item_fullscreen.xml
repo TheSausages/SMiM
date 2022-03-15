@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/black"
-    tools:context=".gallery.GalleryFullscreenActivity">
+    tools:context=".activities.GalleryFullscreenActivity">
 
     <ImageView
         android:id="@+id/gallery_item_fullscreen_id"

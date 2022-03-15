@@ -1,4 +1,4 @@
-package pierwszy.projekt.gallery
+package pierwszy.projekt.adapters
 
 import android.content.Context
 import android.view.LayoutInflater
@@ -6,13 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import pierwszy.projekt.R
 import android.widget.ArrayAdapter
-
+import pierwszy.projekt.activities.setImage
+import pierwszy.projekt.models.GalleryItemModel
 
 class GalleryAdapter(
     context: Context,
-    private val imageList: List<GalleryItem>,
+    private val imageList: List<GalleryItemModel>,
     private val layoutResourceId: Int = R.layout.gallery_item_min
-): ArrayAdapter<GalleryItem>(context, layoutResourceId, imageList) {
+): ArrayAdapter<GalleryItemModel>(context, layoutResourceId, imageList) {
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         //Find the gallery view
         val galleryView = convertView ?: LayoutInflater.from(context).inflate(layoutResourceId, parent, false)
