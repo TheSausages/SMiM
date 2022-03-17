@@ -22,6 +22,9 @@ class MainActivity : AppCompatActivity() {
         //Create a Gallery object that contains all the image paths
         galleryIntent = Intent(this, Gallery::class.java)
 
+        //Add flags to make the gallery activity the base activity
+        galleryIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+
         //Check for required permissions
         requestPermissions()
     }
