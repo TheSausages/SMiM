@@ -10,14 +10,17 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import pierwszy.projekt.activities.Gallery
 
-
+/**
+ * Main activity of the application. Is used to check for permissions and start the main Gallery activity.
+ *
+ * @see Gallery
+ */
 class MainActivity : AppCompatActivity() {
     private val PERMISSION_REQUEST_CODE = 200
     private lateinit var galleryIntent: Intent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.gallery_collection)
 
         //Create a Gallery object that contains all the image paths
         galleryIntent = Intent(this, Gallery::class.java)

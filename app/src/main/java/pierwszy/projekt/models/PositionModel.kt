@@ -1,20 +1,31 @@
 package pierwszy.projekt.models
 
+/**
+ * Small model used for photo positions. Automatically checks if the position can be changed
+ * (doesn't violate the upper and lower bounds). The lower bound is always 0.
+ */
 class PositionModel(var position: Int, max: Int) {
-    var upperLimit = max - 1
+    private var upperLimit = max - 1
+    private val lowerLimit = 0
 
-    fun forward(): Int {
+    /**
+     * Move forward one position if the upper bound is not violated.
+     */
+    fun forward(): PositionModel {
         if (position < upperLimit) position++
-        return position
+        return this
     }
 
-    fun back(): Int {
-        if (position > 0) position--
-        return position
+    /**
+     * Move back one position if the lower bound is not violated.
+     */
+    fun back(): PositionModel {
+        if (position > lowerLimit) position--
+        return this
     }
 
     val isBeginning: Boolean
-        get() = position == 0
+        get() = position == lowerLimit
 
     val isEnd: Boolean
         get() = position == upperLimit

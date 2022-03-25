@@ -13,14 +13,23 @@ import pierwszy.projekt.models.GalleryItemModel
 import pierwszy.projekt.models.PositionModel
 import kotlin.collections.ArrayList
 
-
+/**
+ * Activity used for showing an image on the full screen.
+ */
 class GalleryFullscreenActivity: AppCompatActivity() {
 
+    /**
+     * The suppression is because we don't use a custom view (that would overwrite performClick).
+     */
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.gallery_item_fullscreen)
 
+        //Use the fullscrean layout
+        setContentView(R.layout.gallery_item_fullscreen)
+        val imageView: ImageView = findViewById(R.id.gallery_item_fullscreen_id)
+
+        //Pull list of images and the current position
         val images: ArrayList<GalleryItemModel> =
             intent.extras?.getParcelableArrayList("images")
                 ?: throw Resources.NotFoundException("Did not find the images")
@@ -31,34 +40,30 @@ class GalleryFullscreenActivity: AppCompatActivity() {
             images.size
         )
 
-        val imageView: ImageView = findViewById(R.id.gallery_item_fullscreen_id)
+        //Set the correct image
+        setImage(this, imageView, images[currentPosition.position])
 
-        setImage(imageView, (images[currentPosition.position]))
-
+        //Add the swipe listener
         imageView.setOnTouchListener(SimpleSwipeListener(
             imageView.context,
-            {
-                kotlin.run {
-                    if (!currentPosition.isEnd) {
-                        val intent = Intent(baseContext, GalleryFullscreenActivity::class.java).setFlags(FLAG_ACTIVITY_CLEAR_TOP)
-                        intent.putParcelableArrayListExtra("images", images)
-                        intent.putExtra("currentPosition", currentPosition.forward())
-                        startActivity(intent)
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left)
-                    }
-                }
-            },
-            {
-                kotlin.run {
-                    if (!currentPosition.isBeginning) {
-                        val intent = Intent(baseContext, GalleryFullscreenActivity::class.java).setFlags(FLAG_ACTIVITY_CLEAR_TOP)
-                        intent.putParcelableArrayListExtra("images", images)
-                        intent.putExtra("currentPosition", currentPosition.back())
-                        startActivity(intent)
-                        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right)
-                    }
-                }
-            }
+            {  changePhotoWith(!currentPosition.isEnd, currentPosition.forward(), images, R.anim.slide_in_right, R.anim.slide_out_left) },
+            {  changePhotoWith(!currentPosition.isBeginning, currentPosition.back(), images, R.anim.slide_in_left, R.anim.slide_out_right) }
         ))
+    }
+
+    /**
+     * Method used to change photos when fullscreen. It creates a new [GalleryFullscreenActivity] with an updated position.
+     * It also adds animations to the transition.
+     */
+    private fun changePhotoWith(condition: Boolean, pos: PositionModel, images: List<GalleryItemModel>, enterAnimation: Int, endAnimation: Int) {
+        if (condition) {
+            kotlin.run {
+                val intent = Intent(baseContext, GalleryFullscreenActivity::class.java).setFlags(FLAG_ACTIVITY_CLEAR_TOP)
+                intent.putParcelableArrayListExtra("images", ArrayList(images))
+                intent.putExtra("currentPosition", pos.position)
+                startActivity(intent)
+                overridePendingTransition(enterAnimation, endAnimation)
+            }
+        }
     }
 }

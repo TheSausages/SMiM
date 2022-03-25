@@ -6,6 +6,9 @@ import android.view.MotionEvent
 import android.view.View
 import kotlin.math.abs
 
+/**
+ * Simple listener that enables swiping.
+ */
 class SimpleSwipeListener(
     context: Context,
     val swipeRight: () -> Unit,
